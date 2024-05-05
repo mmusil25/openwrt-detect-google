@@ -5,7 +5,7 @@
 `ping_google.sh` is a bash script that sends HTTP requests to www.google.com very rapidly in order to test `detectGoogle.cpp`
 
 ## Usage
-
+```
 Usage: detectGoogle <device> <IP>
 
 Where:
@@ -30,3 +30,4 @@ Examples:
   detectGoogle wlan0 10.0.0.5
   This command will run the packet sniffer on the 'wlan0' interface, looking for packets
   from 10.0.0.5 that access www.google.com.
+```
