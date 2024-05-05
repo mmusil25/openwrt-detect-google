@@ -17,60 +17,70 @@ void packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_c
     }
 }
 
-int main() {
+int main(int argc, char *argv[]) {
+    if (argc < 3) {
+        fprintf(stderr, "Usage: %s <device> <IP>\n", argv[0]);
+        return 1;
+    }
+
+    char *device = argv[1];
+    char *ip = argv[2];
+
+    char filter_exp[100];
+    snprintf(filter_exp, sizeof(filter_exp), "ip src %s and tcp", ip); // Dynamically created filter expression
+
     pcap_t *descr;
     char errbuf[PCAP_ERRBUF_SIZE];
     struct bpf_program filter;
-    char filter_exp[] = "ip src 192.168.2.148 and tcp"; // Filter for IP source and TCP protocol
 
-    printf("Opening device for sniffing...\n"); // Debug: Notify opening device
-    fflush(stdout); // Flush the standard output buffer
+    printf("Opening device %s for sniffing...\n", device);
+    fflush(stdout);
 
     // Open the device for sniffing.
-    descr = pcap_open_live("br-lan", BUFSIZ, 1, 1000, errbuf);
+    descr = pcap_open_live(device, BUFSIZ, 1, 1000, errbuf);
     if (descr == NULL) {
         fprintf(stderr, "pcap_open_live() failed: %s\n", errbuf);
-        fflush(stderr); // Flush the standard error buffer
+        fflush(stderr);
         return 1;
-    } else {
-        printf("Device opened successfully.\n"); // Debug: Device opened successfully
-        fflush(stdout); // Flush the standard output buffer
     }
 
-    printf("Compiling filter: %s\n", filter_exp); // Debug: Show the filter expression
-    fflush(stdout); // Flush the standard output buffer
+    printf("Device opened successfully.\n");
+    fflush(stdout);
+
+    printf("Compiling filter: %s\n", filter_exp);
+    fflush(stdout);
 
     // Compile and set the packet filter
     if (pcap_compile(descr, &filter, filter_exp, 0, PCAP_NETMASK_UNKNOWN) == -1) {
         fprintf(stderr, "Couldn't parse filter %s: %s\n", filter_exp, pcap_geterr(descr));
-        fflush(stderr); // Flush the standard error buffer
+        fflush(stderr);
         pcap_close(descr);
         return 1;
     }
 
-    printf("Filter compiled successfully. Setting filter...\n"); // Debug: Filter compiled
-    fflush(stdout); // Flush the standard output buffer
+    printf("Filter compiled successfully. Setting filter...\n");
+    fflush(stdout);
 
     if (pcap_setfilter(descr, &filter) == -1) {
         fprintf(stderr, "Couldn't install filter %s: %s\n", filter_exp, pcap_geterr(descr));
-        fflush(stderr); // Flush the standard error buffer
+        fflush(stderr);
         pcap_close(descr);
         return 1;
     }
 
-    printf("Filter set successfully. Starting packet loop...\n"); // Debug: Filter set
-    fflush(stdout); // Flush the standard output buffer
+    printf("Filter set successfully. Starting packet loop...\n");
+    fflush(stdout);
 
     // Start packet processing loop, run indefinitely
     if (pcap_loop(descr, -1, packetHandler, NULL) < 0) {
         fprintf(stderr, "pcap_loop() failed: %s\n", pcap_geterr(descr));
-        fflush(stderr); // Flush the standard error buffer
+        fflush(stderr);
         pcap_close(descr);
         return 1;
     }
 
-    printf("Closing session...\n"); // Debug: Notify closing session
-    fflush(stdout); // Flush the standard output buffer
+    printf("Closing session...\n");
+    fflush(stdout);
 
     // Close the session
     pcap_close(descr);
