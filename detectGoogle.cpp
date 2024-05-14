@@ -21,13 +21,32 @@ void blinkThreeLEDs(){
 
     // Open GPIO chip
     chip = gpiod_chip_open_by_name(chipname);
-
+    if (chip == NULL){
+	    perror("Failed to open GPIO chip");
+	    return;
+    }
     // Open GPIO lines
     lineRed = gpiod_chip_get_line(chip,24);
+    if (lineRed == NULL){
+	    perror("Failed to open lineRed");
+	    return;
+    }
     lineGreen = gpiod_chip_get_line(chip,25);
+    if (lineGreen == NULL){
+	    perror("Failed to open lineGreen");
+	    return;
+    }
     lineYellow = gpiod_chip_get_line(chip,5);
-    lineButton = gpiod_chip_get_line(chip, 6);
+    if (lineYellow == NULL){
+	    perror("Failed to open lineYellow");
+	    return;
+    }
     // Open LED lines for output
+    lineButton = gpiod_chip_get_line(chip, 6);
+    if (lineButton == NULL){
+	    perror("Failed to open lineButton");
+	    return;
+    }
     gpiod_line_request_output(lineRed, "example1", 0);
     gpiod_line_request_output(lineGreen, "example1", 0);
     gpiod_line_request_output(lineYellow, "example1", 0);
