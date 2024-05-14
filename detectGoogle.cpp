@@ -8,7 +8,7 @@
 
 using namespace std;
 
-void blinkThreeLEDs(int gpioPin, int Duration){
+void blinkThreeLEDs(){
 
     const char *chipname = "gpiochip0";
     struct gpiod_chip *chip;
@@ -57,9 +57,7 @@ void blinkThreeLEDs(int gpioPin, int Duration){
 	gpiod_line_release(lineYellow);
 	gpiod_line_release(lineButton);
 	gpiod_chip_close(chip);
-	return 0;
 }
-
 }
 
 void packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_char* packet) {
@@ -68,7 +66,7 @@ void packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_c
     fflush(stdout); // Flush the standard output buffer
 
     if (strstr(payload, "Host: www.google.com")) {
-	blinkThreeLEDs(int gpioPin, int Duration);
+	blinkThreeLEDs();
         printf("Google.com accessed\n");  // Signal detected access to Google
         fflush(stdout); // Flush the standard output buffer
     } else {
