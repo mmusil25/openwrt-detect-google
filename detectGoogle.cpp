@@ -47,13 +47,39 @@ void blinkThreeLEDs(){
 	    perror("Failed to open lineButton");
 	    return;
     }
-    gpiod_line_request_output(lineRed, "example1", 0);
-    gpiod_line_request_output(lineGreen, "example1", 0);
-    gpiod_line_request_output(lineYellow, "example1", 0);
+    int redOut =  gpiod_line_request_output(lineRed, "example1", 0);
+    if (redOut == 0){
+	printf("Red line was properly reserved")
+    }
+    else if (redOut == -1){
+	printf("Red line failed to be reserved")
+    }
 
+
+    int greenOut =  gpiod_line_request_output(lineGreen, "example1", 0);
+    if (greenOut == 0){
+	printf("Green line was properly reserved")
+    }
+    else if (greenOut == -1){
+	printf("Green line failed to be reserved")
+    }
+
+    int yellowOut =  gpiod_line_request_output(lineYellow, "example1", 0);
+    if (yellowOut == 0){
+	printf("yellow line was properly reserved")
+    }
+    else if (yellowOut == -1){
+	printf("yellow line failed to be reserved")
+    }
     // Open switch line for input
-    gpiod_line_request_input(lineButton, "example1");
 
+    int buttonIn =  gpiod_line_request_input(lineButton, "example1", 0);
+    if (buttonIn == 0){
+	printf("Button line was properly reserved")
+    }
+    else if (buttonIn == -1){
+	printf("Button line failed to be reserved")
+    }
     // Blink LEDs in a binary pattern
     i = 0;
     while(true)
