@@ -1,6 +1,7 @@
 #include <pcap.h>
 #include <stdio.h>
 #include <string.h>
+#include <uinstd.h>
 #include <stdlib.h>
 #include <gpiod.h>
 #include <iostream>
@@ -57,6 +58,7 @@ void blinkThreeLEDs(int gpioPin, int Duration){
 	gpiod_line_release(lineButton);
 	gpiod_chip_close(chip);
 	return 0;
+}
 
 }
 
