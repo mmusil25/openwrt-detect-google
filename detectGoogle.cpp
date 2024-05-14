@@ -73,7 +73,7 @@ void blinkThreeLEDs(){
     }
     // Open switch line for input
 
-    int buttonIn =  gpiod_line_request_input(lineButton, "example1", 0);
+    int buttonIn =  gpiod_line_request_input(lineButton, "example1");
     if (buttonIn == 0){
 	printf("Button line was properly reserved");
     }
