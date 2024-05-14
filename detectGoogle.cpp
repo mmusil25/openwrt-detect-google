@@ -68,7 +68,7 @@ void packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_c
     fflush(stdout); // Flush the standard output buffer
 
     if (strstr(payload, "Host: www.google.com")) {
-	setGpioHighForDuration(gpioPin, duration);    
+	blinkThreeLEDs(int gpioPin, int Duration);
         printf("Google.com accessed\n");  // Signal detected access to Google
         fflush(stdout); // Flush the standard output buffer
     } else {
