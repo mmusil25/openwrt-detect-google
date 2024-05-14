@@ -41,7 +41,7 @@ void blinkThreeLEDs(){
     {
 	    gpiod_line_set_value(lineRed, (i & 1) != 0);
 	    gpiod_line_set_value(lineGreen, (i & 2) != 0);
-	    gpiod_line_set_value(lineGreen, (i & 4) != 0);
+	    gpiod_line_set_value(lineYellow, (i & 4) != 0);
 
 	    // Read button status and exit if pressed
 	    val = gpiod_line_get_value(lineButton);
@@ -51,13 +51,13 @@ void blinkThreeLEDs(){
 
 	    usleep(100000);
 	    i++;	    
-
+    }
 	gpiod_line_release(lineRed);
 	gpiod_line_release(lineGreen);
 	gpiod_line_release(lineYellow);
 	gpiod_line_release(lineButton);
 	gpiod_chip_close(chip);
-}
+
 }
 
 void packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_char* packet) {
