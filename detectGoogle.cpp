@@ -14,10 +14,10 @@ void packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_c
     fflush(stdout); // Flush the standard output buffer
 
     if (strstr(payload, "Host: www.google.com")) {
-        system("/usr/sbin/gpio_ctrl_script.sh 22 out 1");
+        system("/usr/sbin/gpio_ctl_script.sh 22 out 1");
         printf("Google.com accessed\n");  // Signal detected access to Google
 	usleep(1000000);
-        system("/usr/sbin/gpio_ctrl_script.sh 22 out 0");
+        system("/usr/sbin/gpio_ctl_script.sh 22 out 0");
 	fflush(stdout); // Flush the standard output buffer
     } else {
         printf("Packet does not contain 'Host: www.google.com'\n");  // Debug: packet does not match
