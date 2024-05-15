@@ -8,142 +8,17 @@
 
 using namespace std;
 
-int list_gpios(){
-	struct gpiod_chip *chip;
-	struct gpiod_line *line;
-	const char *chipname = "gpiochip0";
-	unsigned int i;
-	int num_lines;
-
-	chip = gpiod_chip_open_by_name(chipname);
-	if (!chip){
-		perror("gpiod_chip_open_by_name");
-		return 1;
-	}
-
-	num_lines = gpiod_chip_num_lines(chip);
-	printf("GPIO Chip: %s, number of lines: %d\n", gpiod_chip_name(chip), num_lines);
-
-	for (i=0; i<num_lines; i++){
-		line = gpiod_chip_get_line(chip, i);
-		if(!line){
-			perror("gpiod_chip_get_line");
-			continue;
-		}
-		printf("line %d is free and usable \n", i);
-	}
-
-	gpiod_chip_close(chip);
-	return 0;
-}
-
-void blinkThreeLEDs(){
-
-    const char *chipname = "gpiochip0";
-    struct gpiod_chip *chip;
-    struct gpiod_line *lineRed;    // Red LED
-    struct gpiod_line *lineButton; // Pushbutton
-    struct gpiod_line *lineGreen;   // Green LED
-    struct gpiod_line *lineYellow; // yellow LED				    
-    int i, val; 
-
-
-    // Open GPIO chip
-    chip = gpiod_chip_open_by_name(chipname);
-    if (chip == NULL){
-	    perror("Failed to open GPIO chip");
-	    return;
-    }
-    // Open GPIO lines
-    lineRed = gpiod_chip_get_line(chip,24);
-    if (lineRed == NULL){
-	    perror("Failed to open lineRed");
-	    return;
-    }
-    lineGreen = gpiod_chip_get_line(chip,25);
-    if (lineGreen == NULL){
-	    perror("Failed to open lineGreen");
-	    return;
-    }
-    lineYellow = gpiod_chip_get_line(chip,5);
-    if (lineYellow == NULL){
-	    perror("Failed to open lineYellow");
-	    return;
-    }
-    // Open LED lines for output
-    lineButton = gpiod_chip_get_line(chip, 6);
-    if (lineButton == NULL){
-	    perror("Failed to open lineButton");
-	    return;
-    }
-    int redOut =  gpiod_line_request_output(lineRed, "example1", 0);
-    if (redOut == 0){
-	printf("Red line was properly reserved");
-    }
-    else if (redOut == -1){
-	printf("Red line failed to be reserved");
-    }
-
-
-    int greenOut =  gpiod_line_request_output(lineGreen, "example1", 0);
-    if (greenOut == 0){
-	printf("Green line was properly reserved");
-    }
-    else if (greenOut == -1){
-	printf("Green line failed to be reserved");
-    }
-
-    int yellowOut =  gpiod_line_request_output(lineYellow, "example1", 0);
-    if (yellowOut == 0){
-	printf("yellow line was properly reserved");
-    }
-    else if (yellowOut == -1){
-	printf("yellow line failed to be reserved");
-    }
-    // Open switch line for input
-
-    int buttonIn =  gpiod_line_request_input(lineButton, "example1");
-    if (buttonIn == 0){
-	printf("Button line was properly reserved");
-    }
-    else if (buttonIn == -1){
-	printf("Button line failed to be reserved");
-    }
-    // Blink LEDs in a binary pattern
-    i = 0;
-    while(true)
-    {
-	    gpiod_line_set_value(lineRed, (i & 1) != 0);
-	    gpiod_line_set_value(lineGreen, (i & 2) != 0);
-	    gpiod_line_set_value(lineYellow, (i & 4) != 0);
-
-	    // Read button status and exit if pressed
-	    val = gpiod_line_get_value(lineButton);
-	    if (val == 0){
-		break;
-    		}
-
-	    usleep(100000);
-	    i++;	    
-    }
-	gpiod_line_release(lineRed);
-	gpiod_line_release(lineGreen);
-	gpiod_line_release(lineYellow);
-	gpiod_line_release(lineButton);
-	gpiod_chip_close(chip);
-
-}
-
 void packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_char* packet) {
     const char *payload = (char *)(packet + 54); // Adjusted offset to skip Ethernet, IP, and TCP headers
     printf("Packet captured: length=%d\n", pkthdr->len); // Debug: output packet length
     fflush(stdout); // Flush the standard output buffer
 
     if (strstr(payload, "Host: www.google.com")) {
-	list_gpios();
-        blinkThreeLEDs();
+        system("/usr/sbin/gpio_ctrl_script.sh 22 out 1");
         printf("Google.com accessed\n");  // Signal detected access to Google
-        fflush(stdout); // Flush the standard output buffer
+	usleep(1000000);
+        system("/usr/sbin/gpio_ctrl_script.sh 22 out 0");
+	fflush(stdout); // Flush the standard output buffer
     } else {
         printf("Packet does not contain 'Host: www.google.com'\n");  // Debug: packet does not match
         fflush(stdout); // Flush the standard output buffer
